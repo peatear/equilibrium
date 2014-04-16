@@ -11,6 +11,11 @@ namespace kuntakinte
 		double mpitch;
 		double myaw;
 
+		//position
+		double xpos;
+		double ypos;
+		double zpos;
+
 		//duty cycle output to motor
 		double duty[4];
 
@@ -40,5 +45,7 @@ namespace kuntakinte
 		int pitchPID(double pitch);
 
 		int yawPID(double yaw);
-    };
+		void OnReadingChanged(Windows::Devices::Sensors::Inclinometer ^sender, Windows::Devices::Sensors::InclinometerReadingChangedEventArgs ^args);
+		void OnReadingChanged(Windows::Devices::Sensors::Accelerometer ^sender, Windows::Devices::Sensors::AccelerometerReadingChangedEventArgs ^args);
+	};
 }

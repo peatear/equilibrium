@@ -5,8 +5,22 @@
 using namespace kuntakinte;
 using namespace Platform;
 
+using namespace Windows::Devices::Sensors;
+using namespace Windows::Foundation;
+
 flightbox::flightbox()
 {
+
+	//get inclinometer
+	Inclinometer^ inclinometer = Inclinometer::GetDefault();
+	inclinometer->ReportInterval = inclinometer->MinimumReportInterval;
+	inclinometer->ReadingChanged+=ref new TypedEventHandler<Inclinometer ^, InclinometerReadingChangedEventArgs ^>(this, &flightbox::OnReadingChanged);
+
+	//get accelerometer
+	Accelerometer^ accelerometer = Accelerometer::GetDefault();
+	accelerometer->ReportInterval = accelerometer->MinimumReportInterval;
+	accelerometer->ReadingChanged+=ref new TypedEventHandler<Accelerometer ^, AccelerometerReadingChangedEventArgs ^>(this, &flightbox::OnReadingChanged);
+
 
 	//initialize cal value to 0
 	this->mroll = 0;
@@ -70,3 +84,14 @@ int flightbox::balance(double roll, double pitch, double yaw){
 }
 
 */
+
+void flightbox::OnReadingChanged(Inclinometer ^sender, InclinometerReadingChangedEventArgs ^args)
+{
+	//throw ref new Platform::NotImplementedException();
+}
+
+
+void flightbox::OnReadingChanged(Accelerometer ^sender, AccelerometerReadingChangedEventArgs ^args)
+{
+	//throw ref new Platform::NotImplementedException();
+}
