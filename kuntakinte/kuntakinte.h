@@ -45,7 +45,7 @@ namespace kuntakinte
 		int pitchPID(double pitch);
 
 		int yawPID(double yaw);
-		void OnReadingChanged(Windows::Devices::Sensors::Inclinometer ^sender, Windows::Devices::Sensors::InclinometerReadingChangedEventArgs ^args);
-		void OnReadingChanged(Windows::Devices::Sensors::Accelerometer ^sender, Windows::Devices::Sensors::AccelerometerReadingChangedEventArgs ^args);
+		void OnInclineReadingChanged(Windows::Devices::Sensors::Inclinometer ^sender, Windows::Devices::Sensors::InclinometerReadingChangedEventArgs ^args);
+		void OnAccelReadingChanged(Windows::Devices::Sensors::Accelerometer ^sender, Windows::Devices::Sensors::AccelerometerReadingChangedEventArgs ^args);
 	};
 }

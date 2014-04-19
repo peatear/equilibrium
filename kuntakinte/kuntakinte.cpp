@@ -5,8 +5,19 @@
 using namespace kuntakinte;
 using namespace Platform;
 
+//namespace required to support sensor and events
 using namespace Windows::Devices::Sensors;
 using namespace Windows::Foundation;
+using namespace Windows::System::Threading;
+
+using namespace Windows::Foundation::Collections;
+
+//namespace for UI control
+using namespace Windows::UI::Xaml;
+using namespace Windows::UI::Xaml::Media;
+
+
+
 
 flightbox::flightbox()
 {
@@ -14,12 +25,12 @@ flightbox::flightbox()
 	//get inclinometer
 	Inclinometer^ inclinometer = Inclinometer::GetDefault();
 	inclinometer->ReportInterval = inclinometer->MinimumReportInterval;
-	inclinometer->ReadingChanged+=ref new TypedEventHandler<Inclinometer ^, InclinometerReadingChangedEventArgs ^>(this, &flightbox::OnReadingChanged);
+	inclinometer->ReadingChanged+=ref new TypedEventHandler<Inclinometer ^, InclinometerReadingChangedEventArgs ^>(this, &flightbox::OnInclineReadingChanged);
 
 	//get accelerometer
 	Accelerometer^ accelerometer = Accelerometer::GetDefault();
 	accelerometer->ReportInterval = accelerometer->MinimumReportInterval;
-	accelerometer->ReadingChanged+=ref new TypedEventHandler<Accelerometer ^, AccelerometerReadingChangedEventArgs ^>(this, &flightbox::OnReadingChanged);
+	accelerometer->ReadingChanged+=ref new TypedEventHandler<Accelerometer ^, AccelerometerReadingChangedEventArgs ^>(this, &flightbox::OnAccelReadingChanged);
 
 
 	//initialize cal value to 0
@@ -85,13 +96,16 @@ int flightbox::balance(double roll, double pitch, double yaw){
 
 */
 
-void flightbox::OnReadingChanged(Inclinometer ^sender, InclinometerReadingChangedEventArgs ^args)
+void flightbox::OnInclineReadingChanged(Inclinometer ^sender, InclinometerReadingChangedEventArgs ^args)
 {
 	//throw ref new Platform::NotImplementedException();
+	
+	
+	
 }
 
 
-void flightbox::OnReadingChanged(Accelerometer ^sender, AccelerometerReadingChangedEventArgs ^args)
+void flightbox::OnAccelReadingChanged(Accelerometer ^sender, AccelerometerReadingChangedEventArgs ^args)
 {
 	//throw ref new Platform::NotImplementedException();
 }
