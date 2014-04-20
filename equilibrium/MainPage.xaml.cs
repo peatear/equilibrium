@@ -17,13 +17,18 @@ using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using Microsoft.Devices.Sensors;
 
+using Windows.Networking.Sockets;
+using Windows.Networking.Proximity;
+
+
+
 using Microsoft.Xna.Framework;
 using equilibrium.Resources;
 
 using Windows.System.Threading;
 using Windows.Devices.Geolocation;
 
-
+using BluetoothConnectionManager;
 using kuntakinte;
 
 
@@ -35,6 +40,10 @@ namespace equilibrium
         flightbox mflightbox;
         btConManager mConManager;
 
+        float roll;
+        float pitch;
+        float yaw;
+
         // Constructor
         public MainPage()
         {
@@ -42,6 +51,7 @@ namespace equilibrium
 
             //new bluetooth manager
             mConManager = new btConManager();
+
      
             mflightbox = new flightbox(); // initialize a new flightbox
 
@@ -73,7 +83,28 @@ namespace equilibrium
         private async void AppToDevice()
         {
             //configure peerfinder to search for all paired devices
-            
+            PeerFinder.AlternateIdentities["Bluetooth:Paired"] = "";
+            var pairedDevices = await PeerFinder.FindAllPeersAsync();
+
+            if (pairedDevices.Count == 0)
+            {
+
+            }
+            else
+            {
+                foreach (var pairedDevice in pairedDevices)
+                {
+                    if (pairedDevice.DisplayName == DeviceName.Text)
+                    {
+                        mConManager.Connect(pairedDevice.HostName);
+                        ConnectAppToDeviceButton.Content = "Connected";
+                        DeviceName.IsReadOnly = true;
+                        ConnectAppToDeviceButton.IsEnabled = false;
+                        continue;
+
+                    }
+                }
+            }
         }
 
         void fb_inclineEvent(float[] data)
@@ -81,12 +112,30 @@ namespace equilibrium
 
             Dispatcher.BeginInvoke(() =>
             {
-                rollTextBlock.Text = data[0].ToString();
-                pitchTextBlock.Text = data[1].ToString();
-                yawTextBlock.Text=data[2].ToString();
+                roll = data[0];
+                pitch = data[1];
+                yaw = data[2];
+                rollTextBlock.Text = roll.ToString();
+                pitchTextBlock.Text = pitch.ToString();
+                yawTextBlock.Text=yaw.ToString();
+
+                
 
             });
+
+            updateMotorDrive(roll);
             
+        }
+
+
+        private async void updateMotorDrive(float cmd)
+        {
+            await mConManager.SendCommand(cmd.ToString());
+        }
+
+        private void ConnectAppToDeviceButton_Click(object sender, RoutedEventArgs e)
+        {
+            AppToDevice();
         }
     }
 }
