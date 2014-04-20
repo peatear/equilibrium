@@ -16,8 +16,13 @@ using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using Microsoft.Devices.Sensors;
+
 using Microsoft.Xna.Framework;
 using equilibrium.Resources;
+
+using Windows.System.Threading;
+using Windows.Devices.Geolocation;
+
 
 using kuntakinte;
 
@@ -26,9 +31,9 @@ namespace equilibrium
 {
     public partial class MainPage : PhoneApplicationPage
     {
-        private Motion motion;
-        private flightbox mflightbox;
-        private btConManager mConManager;
+        
+        flightbox mflightbox;
+        btConManager mConManager;
 
         // Constructor
         public MainPage()
@@ -38,33 +43,10 @@ namespace equilibrium
             //new bluetooth manager
             mConManager = new btConManager();
      
+            mflightbox = new flightbox(); // initialize a new flightbox
 
 
-            // Sample code to localize the ApplicationBar
-            //BuildLocalizedApplicationBar();
-            if (!Motion.IsSupported)
-            {
-                MessageBox.Show("The motion API is not supported on this device.");
-                return;
-            }
-
-            if (motion == null)
-            {
-                motion = new Motion();
-                //motion.TimeBetweenUpdates = TimeSpan.FromMilliseconds(20);
-                motion.CurrentValueChanged += new EventHandler<SensorReadingEventArgs<MotionReading>>(motion_CurrentValueChanged);
-            }
-
-            try
-            {
-                motion.Start();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("unable to start the Motion API.");
-            }
-
-            flightbox mflightbox = new flightbox(); // initialize a new flightbox
+            mflightbox.inclineEvent += fb_inclineEvent;
             
         }
         
@@ -85,28 +67,25 @@ namespace equilibrium
         //    ApplicationBar.MenuItems.Add(appBarMenuItem);
         //}
 
-        void motion_CurrentValueChanged(object sender, SensorReadingEventArgs<MotionReading> e)
-        {
-            Dispatcher.BeginInvoke(() => CurrentValueChanged(e.SensorReading));
-        }
+        
 
-        private void CurrentValueChanged(MotionReading e)
-        {
-            //check to see if motion data is valid.
-            if (motion.IsDataValid)
-            {
-                //show numeric values for attitude
-                yawTextBlock.Text = MathHelper.ToDegrees(e.Attitude.Yaw).ToString("0");
-                pitchTextBlock.Text = MathHelper.ToDegrees(e.Attitude.Pitch).ToString("0");
-                rollTextBlock.Text = MathHelper.ToDegrees(e.Attitude.Roll).ToString("0");
-                
-
-            }
-        }
-
+     
         private async void AppToDevice()
         {
             //configure peerfinder to search for all paired devices
+            
+        }
+
+        void fb_inclineEvent(float[] data)
+        {
+
+            Dispatcher.BeginInvoke(() =>
+            {
+                rollTextBlock.Text = data[0].ToString();
+                pitchTextBlock.Text = data[1].ToString();
+                yawTextBlock.Text=data[2].ToString();
+
+            });
             
         }
     }

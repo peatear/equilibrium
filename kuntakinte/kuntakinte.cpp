@@ -23,15 +23,25 @@ flightbox::flightbox()
 {
 
 	//get inclinometer
-	Inclinometer^ inclinometer = Inclinometer::GetDefault();
+
+	inclinometer = Inclinometer::GetDefault();
+	
 	inclinometer->ReportInterval = inclinometer->MinimumReportInterval;
-	inclinometer->ReadingChanged+=ref new TypedEventHandler<Inclinometer ^, InclinometerReadingChangedEventArgs ^>(this, &flightbox::OnInclineReadingChanged);
+	
+	
+	inclinometer->ReadingChanged::add(ref new TypedEventHandler<Inclinometer ^, InclinometerReadingChangedEventArgs ^>(this, &flightbox::OnInclineReadingChanged));
+
+
+
+	/*
 
 	//get accelerometer
 	Accelerometer^ accelerometer = Accelerometer::GetDefault();
 	accelerometer->ReportInterval = accelerometer->MinimumReportInterval;
-	accelerometer->ReadingChanged+=ref new TypedEventHandler<Accelerometer ^, AccelerometerReadingChangedEventArgs ^>(this, &flightbox::OnAccelReadingChanged);
+	//accelerometer->ReadingChanged+=ref new TypedEventHandler<Accelerometer ^, AccelerometerReadingChangedEventArgs ^>(this, &flightbox::OnAccelReadingChanged);
 
+
+	*/
 
 	//initialize cal value to 0
 	this->mroll = 0;
@@ -59,6 +69,14 @@ flightbox::flightbox()
 	this->kiy = 1;
 	this->kdy = 1;
 
+
+	//initialize rpy array
+	rpy = ref new Platform::Array<float>(3);
+	rpy[0] = 0;
+	rpy[1] = 0;
+	rpy[2] = 0;
+
+	
 }
 
 int flightbox::calibrate(double roll, double pitch, double yaw){
@@ -96,13 +114,24 @@ int flightbox::balance(double roll, double pitch, double yaw){
 
 */
 
+
+
+
 void flightbox::OnInclineReadingChanged(Inclinometer ^sender, InclinometerReadingChangedEventArgs ^args)
 {
-	//throw ref new Platform::NotImplementedException();
 	
+	rpy[0] = args->Reading->RollDegrees;
+	rpy[1] = args->Reading->PitchDegrees;
+	rpy[2] = args->Reading->YawDegrees;
+
+	
+	//throw ref new Platform::NotImplementedException();
+	inclineEvent(rpy);
 	
 	
 }
+
+
 
 
 void flightbox::OnAccelReadingChanged(Accelerometer ^sender, AccelerometerReadingChangedEventArgs ^args)

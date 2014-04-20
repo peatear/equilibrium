@@ -1,11 +1,22 @@
 ﻿#pragma once
 
+
+using namespace Windows::Foundation;
+using namespace Windows::Devices::Sensors;
+
+
 //this is what does all the work
 namespace kuntakinte
 {
+	//callback definitions
+	public delegate void inclineCallback(const Platform::Array<float>^ data);
+
     public ref class flightbox sealed
     {
 	private:
+
+		Inclinometer^ inclinometer;
+
 		//roll pitch and yaw measurement
 		double mroll;
 		double mpitch;
@@ -34,7 +45,22 @@ namespace kuntakinte
 		double kiy;//i gain
 		double kdy;//d gain
 
+		
+		
+
+		//Threads 
+		IAsyncAction ^ threadHandle;
+		
+		
+
     public:
+
+		//roll pitch yaw float array
+		property Platform::Array<float>^ rpy;
+
+		//event interface
+		event inclineCallback^ inclineEvent;
+
         flightbox();
 		int calibrate(double roll, double pitch, double yaw);
 
@@ -45,7 +71,12 @@ namespace kuntakinte
 		int pitchPID(double pitch);
 
 		int yawPID(double yaw);
-		void OnInclineReadingChanged(Windows::Devices::Sensors::Inclinometer ^sender, Windows::Devices::Sensors::InclinometerReadingChangedEventArgs ^args);
-		void OnAccelReadingChanged(Windows::Devices::Sensors::Accelerometer ^sender, Windows::Devices::Sensors::AccelerometerReadingChangedEventArgs ^args);
+
+		
+
+		void OnInclineReadingChanged(Inclinometer ^sender, InclinometerReadingChangedEventArgs ^args);
+		void OnAccelReadingChanged(Accelerometer ^sender, AccelerometerReadingChangedEventArgs ^args);
+
+		
 	};
 }
