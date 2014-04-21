@@ -74,6 +74,7 @@ void setup() {
 //Loop Arduino function
 void loop() {
   if(btSerial.available()) {
+      
       int commandSize = (int)btSerial.read();
       char command[commandSize];
       int commandPos = 0;
@@ -85,6 +86,7 @@ void loop() {
       }
       command[commandPos] = 0;
       processCommand(command);
+      Serial.println(command);
   }
   unsigned long currentTime = millis();
   if((currentTime - time) > periodicMessageFrequency) {
